@@ -1,4 +1,4 @@
-function assertEquals(expected, actual, message) {
+function assertEquals(actual, expected, message) {
   if (expected === actual) {
     return true;
   } else {
@@ -22,13 +22,13 @@ function TestCases() {
   };
 
   this.testFacetedUnaryMinus1 = function() {
-    var f1 = cloak("h", 1, 2);
+    var f1 = policyLibrary.cloak("h", 1, 2);
     f2 = -f1;
     return assertEquals(f2.toString(), "<h?-1:-2>");
   };
 
   this.testFacetedUnaryMinus2 = function() {
-    var f1 = cloak("h", -1, -2);
+    var f1 = policyLibrary.cloak("h", -1, -2);
     f2 = -f1;
     return assertEquals(f2.toString(), "<h?1:2>");
   };
@@ -42,34 +42,70 @@ function TestCases() {
 
   // Different principles
   this.testAddTwoFacetedValues1 = function () {
-    var f1 = cloak("h", 1, 2);
-    var f2 = cloak("l", 3, 3);
+    var f1 = policyLibrary.cloak("h", 1, 2);
+    var f2 = policyLibrary.cloak("l", 3, 3);
     f3 = f1 + f2;
     return assertEquals(f3.toString(), "<h?<l?4:4>:<l?5:5>>");
   };
 
   // Same principles
   this.testAddTwoFacetedValues2 = function () {
-    var f1 = cloak("h", 1, 2);
-    var f2 = cloak("h", 3, 3);
+    var f1 = policyLibrary.cloak("h", 1, 2);
+    var f2 = policyLibrary.cloak("h", 3, 3);
     f3 = f1 + f2;
     return assertEquals(f3.toString(), "<h?4:5>");
   };
 
   this.testAddFacetedToNonFaceted1 = function() {
-    var f1 = cloak("h", 1, 2);
+    var f1 = policyLibrary.cloak("h", 1, 2);
     var v2 = 5;
     f3 = f1 + v2;
     return assertEquals(f3.toString(), "<h?6:7>");
   };
 
+  this.testNonFacetedIfTrue = function() {
+    var v1 = 10;
+    if (10 == v1) {
+      v1 += 1;
+    }
+    return assertEquals(v1, 11);
+  };
+
+  this.testNonFacetedIfFalse = function() {
+    var v1 = 10;
+    if (11 === v1) {
+      v1 += 1;
+    }
+    return assertEquals(v1, 10);
+  };
+
+  this.testFacetedIf = function() {
+    //TODO: This is not really working
+    var f1 = policyLibrary.cloak("h", true, false);
+    var v1;
+    if (f1) {
+      v1 = 11;
+    } else {
+      v1 = 10;
+    }
+    var d = new Document();
+    return assertEquals(v1, 10);
+  };
+
 }
 
-testCaseObject = new TestCases();
+var testCaseObject = new TestCases();
+var failCount = 0;
+var passCount = 0;
+var policyLibrary = new PolicyLibrary();
 for (var testCase in testCaseObject) {
   if ("test" === testCase.substring(0,4)) {
     if (testCaseObject[testCase]()) {
+      passCount++;
       print("Passed");
+    } else {
+      failCount++;
     }
   }
 }
+print("Passed: " + passCount + "\tFailed: " + failCount);
