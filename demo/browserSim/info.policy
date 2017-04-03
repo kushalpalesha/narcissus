@@ -1,0 +1,5 @@
+var infoPolicies = new PolicyLibrary();
+var x = new infoPolicies.Label("SSN");
+infoPolicies.restrict(x, function(secret) {
+  return secret === "hashValue";
+});

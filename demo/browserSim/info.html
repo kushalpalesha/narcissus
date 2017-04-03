@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Enter Information (It's safe)</title>
+  </head>
+  <body>
+    <h3>Your information will remain secure (Maybe?)</h3>
+    <center>
+    <form class="" action="entryPoint.php" method="post">
+      <input type="hidden" name="PageName" value="info"/><br>
+      <label for="Name">Name</label><input id="Name" type="text" name="Name"/><br>
+      <label for="Ad1">Address Line 1</label><input id="Ad1" type="text" name="Ad1"/><br>
+      <label for="Ad2">Address Line 2</label><input id="Ad2" type="text" name="Ad2"/><br>
+      <label for="City">City</label><input id="City" type="text" name="City"/><br>
+      <label for="State">State</label><input id="State" type="text" name="State"/><br>
+      <label for="ZipCode">ZipCode</label><input id="ZipCode" type="text" name="ZipCode"><br>
+      <label for="SSN">SSN</label><input id="SSN" type="text" name="SSN" sensitive="sensitiveInputText"/><br>
+      <input type="hidden" name="SSN_low" value="[redacted]"/><br>
+      <button type="Submit" name="submit">Submit</button><br>
+    </form>
+    </center>
+  </body>
+</html>
