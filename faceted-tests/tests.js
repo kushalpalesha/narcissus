@@ -80,16 +80,14 @@ function TestCases() {
   };
 
   this.testFacetedIf = function() {
-    //TODO: This is not really working
-    var f1 = policyLibrary.cloak("h", true, false);
-    var v1;
+    var f1 = policyLibrary.cloak("h", false, true);
+    var v1 = 8;
     if (f1) {
-      v1 = 11;
-    } else {
       v1 = 10;
+    } else {
+      v1 = 11;
     }
-    var d = new Document();
-    return assertEquals(v1, 10);
+    return assertEquals(v1.toString(), "<h?11:10>");
   };
 
 }
