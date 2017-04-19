@@ -90,6 +90,38 @@ function TestCases() {
     return assertEquals(v1.toString(), "<h?11:10>");
   };
 
+  this.testPolicySimple = function() {
+    var x = new policyLibrary.Label("x");
+    policyLibrary.restrict(x, function (context) {
+      return context === 42;
+    });
+    var a = policyLibrary.cloak(x, 10, 15);
+    return assertEquals(policyLibrary.concretize(42, a), 10);
+  };
+
+  this.testPolicySimpleGoWrong = function() {
+    var x = new policyLibrary.Label("x");
+    policyLibrary.restrict(x, function (context) {
+      return context === 42;
+    });
+    var a = policyLibrary.cloak(x, 10, 15);
+    return assertEquals(policyLibrary.concretize(-2, a), 15);
+  };
+
+  this.testPolicyComplexFacets = function() {
+    var x = new policyLibrary.Label("x");
+    policyLibrary.restrict(x, function (context) {
+      return context.val1 === 22 && context.val2 === 21;
+    });
+
+    var y = new policyLibrary.Label("y");
+    policyLibrary.restrict(y, function (context) {
+      return context.val2 === 22;
+    });
+    var a = policyLibrary.cloak(x, policyLibrary.cloak(y, 10, 15), 0);
+    return assertEquals(policyLibrary.concretize({val1: 22, val2: 21}, a), 15);
+  };
+
 }
 
 var testCaseObject = new TestCases();
@@ -102,6 +134,7 @@ for (var testCase in testCaseObject) {
       passCount++;
       print("Passed");
     } else {
+      print(testCase + " Failed");
       failCount++;
     }
   }
