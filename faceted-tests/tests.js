@@ -122,6 +122,23 @@ function TestCases() {
     return assertEquals(policyLibrary.concretize({val1: 22, val2: 21}, a), 15);
   };
 
+  this.testPartialConcretize = function() {
+    var x = new policyLibrary.Label("x");
+    policyLibrary.restrict(x, function (context) {
+      return context.val1 === 22 && context.val2 === 21;
+    });
+
+    var y = new policyLibrary.Label("y");
+    policyLibrary.restrict(y, function (context) {
+      return context.otherVal = 44;
+    });
+    var a = policyLibrary.cloak(x, policyLibrary.cloak(y, 10, 15), 0);
+
+    var result1 = assertEquals(policyLibrary.partialConcretize({val1: 22, val2: 21}, a).toString(), "<y?10:15>");
+    var result2 = assertEquals(policyLibrary.partialConcretize({val:22}, a), 0);
+    return result2 && result1;
+  }
+
 }
 
 var testCaseObject = new TestCases();
