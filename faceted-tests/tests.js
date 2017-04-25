@@ -139,6 +139,14 @@ function TestCases() {
     return result2 && result1;
   }
 
+  this.testFor = function() {
+    var x;
+    for (x = 0; x < 10; x++) {
+      var i = 1;
+    }
+    return assertEquals(x, 10);
+  }
+
 }
 
 var testCaseObject = new TestCases();
