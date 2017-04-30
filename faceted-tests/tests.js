@@ -22,13 +22,13 @@ function TestCases() {
   };
 
   this.testFacetedUnaryMinus1 = function() {
-    var f1 = policyLibrary.mkSensitive("h", 1, 2);
+    var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = -f1;
     return assertEquals(f2.toString(), "<h?-1:-2>");
   };
 
   this.testFacetedUnaryMinus2 = function() {
-    var f1 = policyLibrary.mkSensitive("h", -1, -2);
+    var f1 = policyEnv.mkSensitive("h", -1, -2);
     var f2 = -f1;
     return assertEquals(f2.toString(), "<h?1:2>");
   };
@@ -42,22 +42,22 @@ function TestCases() {
 
   // Different principals
   this.testAddTwoFacetedValues1 = function () {
-    var f1 = policyLibrary.mkSensitive("h", 1, 2);
-    var f2 = policyLibrary.mkSensitive("l", 3, 3);
+    var f1 = policyEnv.mkSensitive("h", 1, 2);
+    var f2 = policyEnv.mkSensitive("l", 3, 3);
     var f3 = f1 + f2;
     return assertEquals(f3.toString(), "<h?<l?4:4>:<l?5:5>>");
   };
 
   // Same principals
   this.testAddTwoFacetedValues2 = function () {
-    var f1 = policyLibrary.mkSensitive("h", 1, 2);
-    var f2 = policyLibrary.mkSensitive("h", 3, 3);
+    var f1 = policyEnv.mkSensitive("h", 1, 2);
+    var f2 = policyEnv.mkSensitive("h", 3, 3);
     var f3 = f1 + f2;
     return assertEquals(f3.toString(), "<h?4:5>");
   };
 
   this.testAddFacetedToNonFaceted1 = function() {
-    var f1 = policyLibrary.mkSensitive("h", 1, 2);
+    var f1 = policyEnv.mkSensitive("h", 1, 2);
     var v2 = 5;
     var f3 = f1 + v2;
     return assertEquals(f3.toString(), "<h?6:7>");
@@ -80,7 +80,7 @@ function TestCases() {
   };
 
   this.testFacetedIf = function() {
-    var f1 = policyLibrary.mkSensitive("h", false, true);
+    var f1 = policyEnv.mkSensitive("h", false, true);
     var v1 = 8;
     if (f1) {
       v1 = 10;
@@ -91,7 +91,7 @@ function TestCases() {
   };
 
   this.testFacetedIf2 = function() {
-    var f1 = policyLibrary.mkSensitive("h", 20, 55);
+    var f1 = policyEnv.mkSensitive("h", 20, 55);
     var v1 = 8;
     if (f1 < 22) {
       v1 = 10;
@@ -102,7 +102,7 @@ function TestCases() {
   };
 
   this.testFacetedIf3 = function() {
-    var f1 = policyLibrary.mkSensitive("h", 25, 0);
+    var f1 = policyEnv.mkSensitive("h", 25, 0);
     var v1;
     if (f1 > 0) {
       v1 = f1 - 1;
@@ -111,7 +111,7 @@ function TestCases() {
   };
 
   this.testFacetedIf2 = function() {
-    var f1 = policyLibrary.mkSensitive("h", 20, 55);
+    var f1 = policyEnv.mkSensitive("h", 20, 55);
     var v1 = 8;
     if (f1 < 22) {
       v1 = 10;
@@ -122,51 +122,51 @@ function TestCases() {
   };
 
   this.testPolicySimple = function() {
-    var x = policyLibrary.mkLabel("x");
-    policyLibrary.restrict(x, function (context) {
+    var x = policyEnv.mkLabel("x");
+    policyEnv.restrict(x, function (context) {
       return context === 42;
     });
-    var a = policyLibrary.mkSensitive(x, 10, 15);
-    return assertEquals(policyLibrary.concretize(42, a), 10);
+    var a = policyEnv.mkSensitive(x, 10, 15);
+    return assertEquals(policyEnv.concretize(42, a), 10);
   };
 
   this.testPolicySimpleGoWrong = function() {
-    var x = policyLibrary.mkLabel("x");
-    policyLibrary.restrict(x, function (context) {
+    var x = policyEnv.mkLabel("x");
+    policyEnv.restrict(x, function (context) {
       return context === 42;
     });
-    var a = policyLibrary.mkSensitive(x, 10, 15);
-    return assertEquals(policyLibrary.concretize(-2, a), 15);
+    var a = policyEnv.mkSensitive(x, 10, 15);
+    return assertEquals(policyEnv.concretize(-2, a), 15);
   };
 
   this.testPolicyComplexFacets = function() {
-    var x = policyLibrary.mkLabel("x");
-    policyLibrary.restrict(x, function (context) {
+    var x = policyEnv.mkLabel("x");
+    policyEnv.restrict(x, function (context) {
       return context.val1 === 22 && context.val2 === 21;
     });
 
-    var y = policyLibrary.mkLabel("y");
-    policyLibrary.restrict(y, function (context) {
+    var y = policyEnv.mkLabel("y");
+    policyEnv.restrict(y, function (context) {
       return context.val2 === 22;
     });
-    var a = policyLibrary.mkSensitive(x, policyLibrary.mkSensitive(y, 10, 15), 0);
-    return assertEquals(policyLibrary.concretize({val1: 22, val2: 21}, a), 15);
+    var a = policyEnv.mkSensitive(x, policyEnv.mkSensitive(y, 10, 15), 0);
+    return assertEquals(policyEnv.concretize({val1: 22, val2: 21}, a), 15);
   };
 
   this.testPartialConcretize = function() {
-    var x = policyLibrary.mkLabel("x");
-    policyLibrary.restrict(x, function (context) {
+    var x = policyEnv.mkLabel("x");
+    policyEnv.restrict(x, function (context) {
       return context.val1 === 22 && context.val2 === 21;
     });
 
-    var y = policyLibrary.mkLabel("y");
-    policyLibrary.restrict(y, function (context) {
+    var y = policyEnv.mkLabel("y");
+    policyEnv.restrict(y, function (context) {
       return context.otherVal = 44;
     });
-    var a = policyLibrary.mkSensitive(x, policyLibrary.mkSensitive(y, 10, 15), 0);
+    var a = policyEnv.mkSensitive(x, policyEnv.mkSensitive(y, 10, 15), 0);
 
-    var result1 = assertEquals(policyLibrary.partialConcretize({val1: 22, val2: 21}, a).toString(), "<y?10:15>");
-    var result2 = assertEquals(policyLibrary.partialConcretize({val:22}, a), 0);
+    var result1 = assertEquals(policyEnv.partialConcretize({val1: 22, val2: 21}, a).toString(), "<y?10:15>");
+    var result2 = assertEquals(policyEnv.partialConcretize({val:22}, a), 0);
     return result2 && result1;
   };
 
@@ -191,22 +191,22 @@ function TestCases() {
   };
 
   this.testFacetedIncrement = function () {
-    var x = policyLibrary.mkSensitive("h", 2, 1);
+    var x = policyEnv.mkSensitive("h", 2, 1);
     return assertEquals((x++).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?3:2>");
   };
 
   this.testFacetedDecrement = function () {
-    var x = policyLibrary.mkSensitive("h", 2, 1);
+    var x = policyEnv.mkSensitive("h", 2, 1);
     return assertEquals((x--).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?1:0>");
   };
 
   this.testFacetedIncrement2 = function () {
-    var x = policyLibrary.mkSensitive("h", 2, 1);
+    var x = policyEnv.mkSensitive("h", 2, 1);
     return assertEquals((++x).toString(), "<h?3:2>");
   };
 
   this.testFacetedDecrement2 = function () {
-    var x = policyLibrary.mkSensitive("h", 2, 1);
+    var x = policyEnv.mkSensitive("h", 2, 1);
     return assertEquals((--x).toString(), "<h?1:0>");
   };
 
@@ -219,7 +219,7 @@ function TestCases() {
   };
 
   this.testFacetedFunctionApplication = function() {
-    var f1 = policyLibrary.mkSensitive("h", 1, 2);
+    var f1 = policyEnv.mkSensitive("h", 1, 2);
     var add = function(num, num2) {
       return num + num2;
     };
@@ -237,7 +237,7 @@ function TestCases() {
 var testCaseObject = new TestCases();
 var failCount = 0;
 var passCount = 0;
-var policyLibrary = new PolicyLibrary();
+var policyEnv = new PolicyEnvironment();
 for (var testCase in testCaseObject) {
   if ("test" === testCase.substring(0,4)) {
     if (testCaseObject[testCase]()) {
