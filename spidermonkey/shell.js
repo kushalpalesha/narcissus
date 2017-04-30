@@ -55,8 +55,7 @@
         "desugaring",
         "bytecode",
         "interpreter",
-        "facetedInterpreter",
-        "dom"
+        "facetedInterpreter"
     ];
 
     var moduleSources = moduleNames.map(function(moduleName) {
@@ -71,5 +70,9 @@
     var init = evalWithLocation(read('./init.js'), "init.js", 1);
 
     global.Narcissus = init(moduleNames, moduleSources, evalWithLocation, global);
+
+    // dom.js
+    var domjs = read('../lib/dom.js');
+    global.Narcissus.interpreter.evaluate(domjs, 'dom.js', 1);
 
 })(this);
