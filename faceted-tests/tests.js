@@ -170,6 +170,46 @@ function TestCases() {
     return result2 && result1;
   };
 
+  this.testIncrement = function() {
+    var x = 1;
+    return assertEquals(++x, 2);
+  };
+
+  this.testIncrement2 = function() {
+    var x = 1;
+    return assertEquals(x++, 1) && assertEquals(x, 2);
+  };
+
+  this.testDecrement = function() {
+    var x = 1;
+    return assertEquals(--x, 0);
+  };
+
+  this.testDecrement2 = function() {
+    var x = 1;
+    return assertEquals(x--, 1) && assertEquals(x, 0);
+  };
+
+  this.testFacetedIncrement = function () {
+    var x = policyLibrary.mkSensitive("h", 2, 1);
+    return assertEquals((x++).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?3:2>");
+  };
+
+  this.testFacetedDecrement = function () {
+    var x = policyLibrary.mkSensitive("h", 2, 1);
+    return assertEquals((x--).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?1:0>");
+  };
+
+  this.testFacetedIncrement2 = function () {
+    var x = policyLibrary.mkSensitive("h", 2, 1);
+    return assertEquals((++x).toString(), "<h?3:2>");
+  };
+
+  this.testFacetedDecrement2 = function () {
+    var x = policyLibrary.mkSensitive("h", 2, 1);
+    return assertEquals((--x).toString(), "<h?1:0>");
+  };
+
   this.testFor = function() {
     var x;
     for (x = 0; x < 10; x++) {
