@@ -2,7 +2,7 @@ function assertEquals(actual, expected, message) {
   if (expected === actual) {
     return true;
   } else {
-    print("Assertion failed: got " + actual + ", expected " + expected);
+    print("Assertion failed: got " + actual + ", expected " + expected.toString());
     return false;
   }
 }
@@ -24,13 +24,13 @@ function TestCases() {
   this.testFacetedUnaryMinus1 = function() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = -f1;
-    return assertEquals(f2.toString(), "<h?-1:-2>");
+    return assertEquals(f2.toString(), "{h?-1:-2}");
   };
 
   this.testFacetedUnaryMinus2 = function() {
     var f1 = policyEnv.mkSensitive("h", -1, -2);
     var f2 = -f1;
-    return assertEquals(f2.toString(), "<h?1:2>");
+    return assertEquals(f2.toString(), "{h?1:2}");
   };
 
   this.testBinaryAddition = function() {
@@ -45,7 +45,7 @@ function TestCases() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = policyEnv.mkSensitive("l", 3, 3);
     var f3 = f1 + f2;
-    return assertEquals(f3.toString(), "<h?<l?4:4>:<l?5:5>>");
+    return assertEquals(f3.toString(), "{h?{l?4:4}:{l?5:5}}");
   };
 
   // Same principals
@@ -53,14 +53,14 @@ function TestCases() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = policyEnv.mkSensitive("h", 3, 3);
     var f3 = f1 + f2;
-    return assertEquals(f3.toString(), "<h?4:5>");
+    return assertEquals(f3.toString(), "{h?4:5}");
   };
 
   this.testAddFacetedToNonFaceted1 = function() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var v2 = 5;
     var f3 = f1 + v2;
-    return assertEquals(f3.toString(), "<h?6:7>");
+    return assertEquals(f3.toString(), "{h?6:7}");
   };
 
   this.testNonFacetedIfTrue = function() {
@@ -87,7 +87,7 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "<h?11:10>");
+    return assertEquals(v1.toString(), "{h?11:10}");
   };
 
   this.testFacetedIf2 = function() {
@@ -98,7 +98,7 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "<h?10:11>");
+    return assertEquals(v1.toString(), "{h?10:11}");
   };
 
   this.testFacetedIf3 = function() {
@@ -107,7 +107,7 @@ function TestCases() {
     if (f1 > 0) {
       v1 = f1 - 1;
     }
-    return assertEquals(v1.toString(), "<h?24:undefined>");
+    return assertEquals(v1.toString(), "{h?24:undefined}");
   };
 
   this.testFacetedIf2 = function() {
@@ -118,7 +118,7 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "<h?10:11>");
+    return assertEquals(v1.toString(), "{h?10:11}");
   };
 
   this.testPolicySimple = function() {
@@ -165,7 +165,7 @@ function TestCases() {
     });
     var a = policyEnv.mkSensitive(x, policyEnv.mkSensitive(y, 10, 15), 0);
 
-    var result1 = assertEquals(policyEnv.partialConcretize({val1: 22, val2: 21}, a).toString(), "<y?10:15>");
+    var result1 = assertEquals(policyEnv.partialConcretize({val1: 22, val2: 21}, a).toString(), "{y?10:15}");
     var result2 = assertEquals(policyEnv.partialConcretize({val:22}, a), 0);
     return result2 && result1;
   };
@@ -192,22 +192,22 @@ function TestCases() {
 
   this.testFacetedIncrement = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((x++).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?3:2>");
+    return assertEquals((x++).toString(), "{h?2:1}") && assertEquals((x).toString(), "{h?3:2}");
   };
 
   this.testFacetedDecrement = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((x--).toString(), "<h?2:1>") && assertEquals((x).toString(), "<h?1:0>");
+    return assertEquals((x--).toString(), "{h?2:1}") && assertEquals((x).toString(), "{h?1:0}");
   };
 
   this.testFacetedIncrement2 = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((++x).toString(), "<h?3:2>");
+    return assertEquals((++x).toString(), "{h?3:2}");
   };
 
   this.testFacetedDecrement2 = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((--x).toString(), "<h?1:0>");
+    return assertEquals((--x).toString(), "{h?1:0}");
   };
 
   this.testFor = function() {
@@ -224,13 +224,16 @@ function TestCases() {
       return num + num2;
     };
     var f2 = add(f1, 2);
-    return assertEquals(f2.toString(), "<h?3:4>");
+    return assertEquals(f2.toString(), "{h?3:4}");
   };
 
   this.testDom = function() {
-    document.body.appendChild(document.createTextNode("Hello"));
+    var domPolicyEnv = window.policyEnv;
+    var fval = domPolicyEnv.mkSensitive("h", 1, 2);
+    domPolicyEnv.restrict("h", function() { return false});
+    document.body.appendChild(document.createTextNode(fval));
     var text = document.body.innerHTML;
-    return assertEquals(text, "Hello");
+    return assertEquals(text, "2");
   }
 }
 
