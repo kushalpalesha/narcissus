@@ -1,8 +1,8 @@
 function assertEquals(actual, expected, message) {
-  if (expected === actual) {
+  if (typeof actual === typeof expected && expected === actual) {
     return true;
   } else {
-    print("Assertion failed: got " + actual + ", expected " + expected.toString());
+    print("Assertion failed: got " + actual + ", expected " + expected);
     return false;
   }
 }
@@ -24,13 +24,15 @@ function TestCases() {
   this.testFacetedUnaryMinus1 = function() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = -f1;
-    return assertEquals(f2.toString(), "{h?-1:-2}");
+    var expected = policyEnv.mkSensitive("h", -1, -2);
+    return assertEquals(f2, expected);
   };
 
   this.testFacetedUnaryMinus2 = function() {
     var f1 = policyEnv.mkSensitive("h", -1, -2);
     var f2 = -f1;
-    return assertEquals(f2.toString(), "{h?1:2}");
+    var expected = policyEnv.mkSensitive("h", 1, 2);
+    return assertEquals(f2, expected);
   };
 
   this.testBinaryAddition = function() {
@@ -45,7 +47,8 @@ function TestCases() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = policyEnv.mkSensitive("l", 3, 3);
     var f3 = f1 + f2;
-    return assertEquals(f3.toString(), "{h?{l?4:4}:{l?5:5}}");
+    var expected = policyEnv.mkSensitive("h", policyEnv.mkSensitive("l",4,4), policyEnv.mkSensitive("l",5,5));
+    return assertEquals(f3, expected);
   };
 
   // Same principals
@@ -53,14 +56,16 @@ function TestCases() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var f2 = policyEnv.mkSensitive("h", 3, 3);
     var f3 = f1 + f2;
-    return assertEquals(f3.toString(), "{h?4:5}");
+    var expected = policyEnv.mkSensitive("h", 4, 5);
+    return assertEquals(f3, expected);
   };
 
   this.testAddFacetedToNonFaceted1 = function() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
     var v2 = 5;
     var f3 = f1 + v2;
-    return assertEquals(f3.toString(), "{h?6:7}");
+    var expected = policyEnv.mkSensitive("h", 6, 7);
+    return assertEquals(f3, expected);
   };
 
   this.testNonFacetedIfTrue = function() {
@@ -87,7 +92,8 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "{h?11:10}");
+    var expected = policyEnv.mkSensitive("h", 11, 10);
+    return assertEquals(v1, expected);
   };
 
   this.testFacetedIf2 = function() {
@@ -98,7 +104,8 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "{h?10:11}");
+    var expected = policyEnv.mkSensitive("h", 10, 11);
+    return assertEquals(v1, expected);
   };
 
   this.testFacetedIf3 = function() {
@@ -107,7 +114,8 @@ function TestCases() {
     if (f1 > 0) {
       v1 = f1 - 1;
     }
-    return assertEquals(v1.toString(), "{h?24:undefined}");
+    var expected = policyEnv.mkSensitive("h", 24);
+    return assertEquals(v1, expected);
   };
 
   this.testFacetedIf2 = function() {
@@ -118,7 +126,8 @@ function TestCases() {
     } else {
       v1 = 11;
     }
-    return assertEquals(v1.toString(), "{h?10:11}");
+    var expected = policyEnv.mkSensitive("h", 10,11);
+    return assertEquals(v1, expected);
   };
 
   this.testPolicySimple = function() {
@@ -165,7 +174,8 @@ function TestCases() {
     });
     var a = policyEnv.mkSensitive(x, policyEnv.mkSensitive(y, 10, 15), 0);
 
-    var result1 = assertEquals(policyEnv.partialConcretize({val1: 22, val2: 21}, a).toString(), "{y?10:15}");
+    var expected = policyEnv.mkSensitive("y", 10,15);
+    var result1 = assertEquals(policyEnv.partialConcretize({val1: 22, val2: 21}, a), expected);
     var result2 = assertEquals(policyEnv.partialConcretize({val:22}, a), 0);
     return result2 && result1;
   };
@@ -192,22 +202,28 @@ function TestCases() {
 
   this.testFacetedIncrement = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((x++).toString(), "{h?2:1}") && assertEquals((x).toString(), "{h?3:2}");
+    var expected1 = policyEnv.mkSensitive("h",2,1);
+    var expected2 = policyEnv.mkSensitive("h",3,2);
+    return assertEquals(x++, expected1) && assertEquals(x, expected2);
   };
 
   this.testFacetedDecrement = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((x--).toString(), "{h?2:1}") && assertEquals((x).toString(), "{h?1:0}");
+    var expected1 = policyEnv.mkSensitive("h",2,1);
+    var expected2 = policyEnv.mkSensitive("h",1,0);
+    return assertEquals(x--, expected1) && assertEquals(x, expected2);
   };
 
   this.testFacetedIncrement2 = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((++x).toString(), "{h?3:2}");
+    var expected = policyEnv.mkSensitive("h",3,2);
+    return assertEquals(++x, expected);
   };
 
   this.testFacetedDecrement2 = function () {
     var x = policyEnv.mkSensitive("h", 2, 1);
-    return assertEquals((--x).toString(), "{h?1:0}");
+    var expected = policyEnv.mkSensitive("h",1,0);
+    return assertEquals(--x, expected);
   };
 
   this.testFor = function() {
@@ -218,13 +234,27 @@ function TestCases() {
     return assertEquals(x, 10);
   };
 
+  this.testWhile = function () {
+    var x = 10;
+    while (x > 1) {x--;}
+    return assertEquals(x, 1);
+  };
+
+  this.testFacetedWhile = function () {
+    var x = policyEnv.mkSensitive("h", 10, 12);
+    while (x > 1) {x--;}
+    var expected = policyEnv.mkSensitive("h", 1, 1);
+    return assertEquals(x, expected);
+  };
+
   this.testFacetedFunctionApplication = function() {
     var f1 = policyEnv.mkSensitive("h", 1, 2);
-    var add = function(num, num2) {
-      return num + num2;
+    var add = function(num) {
+      return num + 2;
     };
-    var f2 = add(f1, 2);
-    return assertEquals(f2.toString(), "{h?3:4}");
+    var f2 = add(f1);
+    var expected = policyEnv.mkSensitive("h",3,4);
+    return assertEquals(f2, expected);
   };
 
   this.testDom = function() {
@@ -233,7 +263,57 @@ function TestCases() {
     domPolicyEnv.restrict("h", function() { return false});
     document.body.appendChild(document.createTextNode(fval));
     var text = document.body.innerHTML;
-    return assertEquals(text, "2");
+    var expected = domPolicyEnv.mkSensitive("h", 1, 2);
+    return assertEquals(text, expected);
+  };
+
+  this.testDomStringAppend = function() {
+    var domPolicyEnv = window.policyEnv;
+    var fval = domPolicyEnv.mkSensitive("h", "Manny", "JonDoe");
+    document.body.appendChild(document.createTextNode(fval + "'s Salary"));
+    var text = document.body.innerHTML;
+    var expected = domPolicyEnv.mkSensitive("h", "Manny's Salary", "JonDoe's Salary");
+    return assertEquals(text, expected);
+  };
+
+  this.testStringSlice = function () {
+    var str = "Manny's Salary is:40000";
+    var salPos = str.indexOf("Salary");
+    var name = str.slice(0,salPos - 3);
+    return assertEquals(name, "Manny");
+  };
+
+  this.testStringSliceFaceted = function () {
+    var facetedStr = policyEnv.mkSensitive("salary", "Manny's Salary is:40000", "Sally's Salary is:0");
+    var name = facetedStr.slice(0,5);
+    var expected = policyEnv.mkSensitive("salary", "Manny", "Sally");
+    return assertEquals(name, expected);
+  };
+
+  this.testDomSubstring = function() {
+    var domPolicyEnv = window.policyEnv;
+    var fName        = domPolicyEnv.mkSensitive("name", "Manny", "JonDoe");
+    var fSalary      = domPolicyEnv.mkSensitive("salary",40000, 0);
+    document.body.appendChild(document.createTextNode(fName + "'s Salary is:" + fSalary));
+    var text      = document.body.innerHTML;
+    var expected = domPolicyEnv.mkSensitive("name",
+      domPolicyEnv.mkSensitive("salary", "Manny's Salary is:40000", "Manny's Salary is:0"),
+      domPolicyEnv.mkSensitive("salary", "JonDoe's Salary is:40000", "JonDoe's Salary is:0")
+    );
+    return assertEquals(text, expected);
+  };
+
+  this.testMaliciousImageLoad = function () {
+    var domPolicyEnv = window.policyEnv;
+    var fName        = domPolicyEnv.mkSensitive("name", "Manny", "JonDoe");
+    var fSalary      = domPolicyEnv.mkSensitive("salary",40000, 0);
+    var imgSrc       = fName + "_" + fSalary + ".jpg";
+    // var img = document.createElement("img");
+    // img.setAttribute("src","http://localhost:8081/" + fName + "_" + fSalary + ".jpg");
+    var script = document.createElement("script");
+    script.setAttribute("src", "http://localhost:8081/" + fName + "_" + fSalary + ".jpg");
+    document.body.appendChild(script);
+
   }
 }
 
