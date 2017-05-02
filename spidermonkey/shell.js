@@ -55,6 +55,7 @@
         "desugaring",
         "bytecode",
         "interpreter",
+        "XMLHttpRequest",
         "facetedInterpreter"
     ];
 
