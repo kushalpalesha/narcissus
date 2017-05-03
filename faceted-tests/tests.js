@@ -308,12 +308,15 @@ function TestCases() {
     var fName        = domPolicyEnv.mkSensitive("name", "Manny", "JonDoe");
     var fSalary      = domPolicyEnv.mkSensitive("salary",40000, 0);
     var imgSrc       = fName + "_" + fSalary + ".jpg";
-    // var img = document.createElement("img");
-    // img.setAttribute("src","http://localhost:8081/" + fName + "_" + fSalary + ".jpg");
-    var script = document.createElement("script");
-    script.setAttribute("src", "http://localhost:8081/" + fName + "_" + fSalary + ".jpg");
-    document.body.appendChild(script);
-
+    var image = document.createElement("img");
+    image.setAttribute("src", "http://localhost:8081/" + imgSrc);
+    var expected = domPolicyEnv.mkSensitive("name",
+      domPolicyEnv.mkSensitive("salary", "Manny_40000.jpg", "Manny_0.jpg"),
+      domPolicyEnv.mkSensitive("salary", "JonDoe_40000.jpg", "JonDoe_0.jpg")
+    );
+    var result = assertEquals(imgSrc, expected);
+    document.body.appendChild(image);
+    return result;
   }
 }
 
